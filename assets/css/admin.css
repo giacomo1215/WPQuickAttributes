@@ -31,10 +31,15 @@
 }
 
 .wpqa-tab-content {
+    display: none;
     background: #fff;
     border: 1px solid #c3c4c7;
     border-top: none;
     padding: 0 1.5rem 1rem;
+}
+
+.wpqa-tab-content.wpqa-tab-active {
+    display: block;
 }
 
 .wpqa-tab-content h2:first-child,

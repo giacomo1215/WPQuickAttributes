@@ -438,7 +438,7 @@ class WPQA_Admin {
 
                 </div><!-- /#wpqa-tab-settings -->
 
-                <div id="wpqa-tab-style-editor" class="wpqa-tab-content" style="display:none;">
+                <div id="wpqa-tab-style-editor" class="wpqa-tab-content">
                     <?php self::render_style_editor( $settings ); ?>
                 </div><!-- /#wpqa-tab-style-editor -->
 

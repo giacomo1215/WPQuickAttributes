@@ -3,7 +3,7 @@
  * Plugin Name: WPQuickAttributes
  * Plugin URI:  https://github.com/giacomo1215/wpquickattributes
  * Description: WooCommerce attribute quick-finder — display product attribute terms as filterable links in columns/cards.
- * Version:     1.0.2
+ * Version:     1.0.3
  * Author:      Giacomo Giorgi
  * Author URI:  https://github.com/giacomo1215
  * License:     GPL-2.0-or-later
@@ -20,7 +20,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /* ─── Constants ───────────────────────────────────────────────────────── */
-define( 'WPQA_VERSION', '1.0.0' );
+define( 'WPQA_VERSION', '1.0.3' );
 define( 'WPQA_PLUGIN_FILE', __FILE__ );
 define( 'WPQA_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WPQA_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

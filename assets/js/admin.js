@@ -31,6 +31,8 @@
         toggleColumns();
 
         /* ── Tab switching ──────────────────────────────────────────── */
+        var stylePickersInit = false;
+
         $( '.wpqa-nav-tabs .nav-tab' ).on( 'click', function ( e ) {
             e.preventDefault();
             var target = $( this ).attr( 'href' );
@@ -38,12 +40,15 @@
             $( '.wpqa-nav-tabs .nav-tab' ).removeClass( 'nav-tab-active' );
             $( this ).addClass( 'nav-tab-active' );
 
-            $( '.wpqa-tab-content' ).hide().removeClass( 'wpqa-tab-active' );
-            $( target ).show().addClass( 'wpqa-tab-active' );
-        });
+            $( '.wpqa-tab-content' ).removeClass( 'wpqa-tab-active' );
+            $( target ).addClass( 'wpqa-tab-active' );
 
-        /* ── Colour pickers ─────────────────────────────────────────── */
-        $( '.wpqa-color-picker' ).wpColorPicker();
+            // Lazy-init colour pickers the first time the Style Editor is shown.
+            if ( '#wpqa-tab-style-editor' === target && ! stylePickersInit ) {
+                $( '#wpqa-tab-style-editor .wpqa-color-picker' ).wpColorPicker();
+                stylePickersInit = true;
+            }
+        });
     });
 
 })( jQuery );
