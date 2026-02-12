@@ -47,6 +47,12 @@ class WPQA_Frontend {
         // Ensure the stylesheet is enqueued.
         wp_enqueue_style( 'wpqa-frontend' );
 
+        // Inject custom styles from the Style Editor.
+        $custom_css = WPQA_Helpers::generate_custom_css();
+        if ( ! empty( $custom_css ) ) {
+            wp_add_inline_style( 'wpqa-frontend', $custom_css );
+        }
+
         $settings    = WPQA_Helpers::get_settings();
         $num_columns = max( 1, (int) $settings['num_columns'] );
 

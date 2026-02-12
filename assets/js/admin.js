@@ -29,6 +29,21 @@
 
         // Initial state is already set server-side, but run once to be safe.
         toggleColumns();
+
+        /* ── Tab switching ──────────────────────────────────────────── */
+        $( '.wpqa-nav-tabs .nav-tab' ).on( 'click', function ( e ) {
+            e.preventDefault();
+            var target = $( this ).attr( 'href' );
+
+            $( '.wpqa-nav-tabs .nav-tab' ).removeClass( 'nav-tab-active' );
+            $( this ).addClass( 'nav-tab-active' );
+
+            $( '.wpqa-tab-content' ).hide().removeClass( 'wpqa-tab-active' );
+            $( target ).show().addClass( 'wpqa-tab-active' );
+        });
+
+        /* ── Colour pickers ─────────────────────────────────────────── */
+        $( '.wpqa-color-picker' ).wpColorPicker();
     });
 
 })( jQuery );

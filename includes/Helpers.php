@@ -42,6 +42,25 @@ class WPQA_Helpers {
             'container_title' => '',
             'term_overrides'  => array(),
             'num_columns'     => 3,
+            'custom_styles'   => array(
+                'container_max_width'  => '',
+                'container_bg'         => '',
+                'container_padding'    => '',
+                'title_color'          => '',
+                'title_font_size'      => '',
+                'grid_gap'             => '',
+                'card_bg'              => '',
+                'card_border_color'    => '',
+                'card_border_radius'   => '',
+                'card_padding'         => '',
+                'heading_color'        => '',
+                'heading_font_size'    => '',
+                'heading_border_color' => '',
+                'link_color'           => '',
+                'link_hover_color'     => '',
+                'link_font_size'       => '',
+                'count_color'          => '',
+            ),
         );
 
         $saved = get_option( WPQA_OPTION_KEY, array() );
@@ -154,7 +173,7 @@ class WPQA_Helpers {
         $attr_name = wc_attribute_taxonomy_slug( $taxonomy );
 
         $url = add_query_arg(
-            array( 'filter_' . $attr_name => $term->slug ),
+            array( 'wpf_filter_' . $attr_name => $term->slug ),
             $base
         );
 
@@ -197,6 +216,110 @@ class WPQA_Helpers {
 
         // 3. Polylang translated name.
         return WPQA_Polylang::translated_term_name( $term );
+    }
+
+    /* ── Transient flushing ─────────────────────────────────────────── */
+
+    /* ── Custom CSS generation ───────────────────────────────────────── */
+
+    /**
+     * Generate custom CSS from style editor settings.
+     *
+     * @return string CSS rules (without <style> tags).
+     */
+    public static function generate_custom_css() {
+        $settings = self::get_settings();
+        $s        = isset( $settings['custom_styles'] ) ? $settings['custom_styles'] : array();
+        $rules    = array();
+
+        // Container.
+        $props = array();
+        if ( ! empty( $s['container_max_width'] ) ) {
+            $props[] = 'max-width:' . esc_attr( $s['container_max_width'] );
+        }
+        if ( ! empty( $s['container_bg'] ) ) {
+            $props[] = 'background-color:' . esc_attr( $s['container_bg'] );
+        }
+        if ( ! empty( $s['container_padding'] ) ) {
+            $props[] = 'padding:' . esc_attr( $s['container_padding'] );
+        }
+        if ( $props ) {
+            $rules[] = '.wpqa-container{' . implode( ';', $props ) . '}';
+        }
+
+        // Title.
+        $props = array();
+        if ( ! empty( $s['title_color'] ) ) {
+            $props[] = 'color:' . esc_attr( $s['title_color'] );
+        }
+        if ( ! empty( $s['title_font_size'] ) ) {
+            $props[] = 'font-size:' . esc_attr( $s['title_font_size'] );
+        }
+        if ( $props ) {
+            $rules[] = '.wpqa-container__title{' . implode( ';', $props ) . '}';
+        }
+
+        // Grid.
+        if ( ! empty( $s['grid_gap'] ) ) {
+            $rules[] = '.wpqa-columns{gap:' . esc_attr( $s['grid_gap'] ) . '}';
+        }
+
+        // Card.
+        $props = array();
+        if ( ! empty( $s['card_bg'] ) ) {
+            $props[] = 'background-color:' . esc_attr( $s['card_bg'] );
+        }
+        if ( ! empty( $s['card_border_color'] ) ) {
+            $props[] = 'border-color:' . esc_attr( $s['card_border_color'] );
+        }
+        if ( ! empty( $s['card_border_radius'] ) ) {
+            $props[] = 'border-radius:' . esc_attr( $s['card_border_radius'] );
+        }
+        if ( ! empty( $s['card_padding'] ) ) {
+            $props[] = 'padding:' . esc_attr( $s['card_padding'] );
+        }
+        if ( $props ) {
+            $rules[] = '.wpqa-column{' . implode( ';', $props ) . '}';
+        }
+
+        // Heading.
+        $props = array();
+        if ( ! empty( $s['heading_color'] ) ) {
+            $props[] = 'color:' . esc_attr( $s['heading_color'] );
+        }
+        if ( ! empty( $s['heading_font_size'] ) ) {
+            $props[] = 'font-size:' . esc_attr( $s['heading_font_size'] );
+        }
+        if ( ! empty( $s['heading_border_color'] ) ) {
+            $props[] = 'border-bottom-color:' . esc_attr( $s['heading_border_color'] );
+        }
+        if ( $props ) {
+            $rules[] = '.wpqa-column__heading{' . implode( ';', $props ) . '}';
+        }
+
+        // Links.
+        $props = array();
+        if ( ! empty( $s['link_color'] ) ) {
+            $props[] = 'color:' . esc_attr( $s['link_color'] );
+        }
+        if ( ! empty( $s['link_font_size'] ) ) {
+            $props[] = 'font-size:' . esc_attr( $s['link_font_size'] );
+        }
+        if ( $props ) {
+            $rules[] = '.wpqa-column__link{' . implode( ';', $props ) . '}';
+        }
+
+        // Link hover.
+        if ( ! empty( $s['link_hover_color'] ) ) {
+            $rules[] = '.wpqa-column__link:hover,.wpqa-column__link:focus{color:' . esc_attr( $s['link_hover_color'] ) . '}';
+        }
+
+        // Count.
+        if ( ! empty( $s['count_color'] ) ) {
+            $rules[] = '.wpqa-column__count{color:' . esc_attr( $s['count_color'] ) . '}';
+        }
+
+        return implode( "\n", $rules );
     }
 
     /* ── Transient flushing ─────────────────────────────────────────── */

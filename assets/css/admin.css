@@ -24,3 +24,29 @@
     width: 100%;
     max-width: 400px;
 }
+
+/* ── Tabs ──────────────────────────────────────────────────────────── */
+.wpqa-nav-tabs {
+    margin-bottom: 0;
+}
+
+.wpqa-tab-content {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-top: none;
+    padding: 0 1.5rem 1rem;
+}
+
+.wpqa-tab-content h2:first-child,
+.wpqa-tab-content p.description:first-child {
+    margin-top: 1.5rem;
+}
+
+/* ── Style Editor ─────────────────────────────────────────────────── */
+.wpqa-tab-content .form-table .wp-picker-container {
+    display: inline-block;
+}
+
+.wpqa-tab-content .form-table .small-text {
+    width: 100px;
+}

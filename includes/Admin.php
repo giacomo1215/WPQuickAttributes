@@ -65,17 +65,19 @@ class WPQA_Admin {
             return;
         }
 
+        wp_enqueue_style( 'wp-color-picker' );
+
         wp_enqueue_style(
             'wpqa-admin',
             WPQA_PLUGIN_URL . 'assets/css/admin.css',
-            array(),
+            array( 'wp-color-picker' ),
             WPQA_VERSION
         );
 
         wp_enqueue_script(
             'wpqa-admin',
             WPQA_PLUGIN_URL . 'assets/js/admin.js',
-            array( 'jquery' ),
+            array( 'jquery', 'wp-color-picker' ),
             WPQA_VERSION,
             true
         );
@@ -156,6 +158,36 @@ class WPQA_Admin {
             }
         }
 
+        // Custom styles.
+        $styles_raw   = isset( $input['custom_styles'] ) ? (array) $input['custom_styles'] : array();
+        $style_fields = array(
+            'container_max_width', 'container_bg', 'container_padding',
+            'title_color', 'title_font_size',
+            'grid_gap',
+            'card_bg', 'card_border_color', 'card_border_radius', 'card_padding',
+            'heading_color', 'heading_font_size', 'heading_border_color',
+            'link_color', 'link_hover_color', 'link_font_size',
+            'count_color',
+        );
+        $color_fields = array(
+            'container_bg', 'title_color', 'card_bg', 'card_border_color',
+            'heading_color', 'heading_border_color', 'link_color', 'link_hover_color',
+            'count_color',
+        );
+        $clean['custom_styles'] = array();
+
+        foreach ( $style_fields as $field ) {
+            $val = isset( $styles_raw[ $field ] ) ? sanitize_text_field( $styles_raw[ $field ] ) : '';
+            // Strip characters that could break CSS context.
+            $val = str_replace( array( ';', '{', '}', '<', '>', '"', "'" ), '', $val );
+            if ( in_array( $field, $color_fields, true ) && '' !== $val ) {
+                if ( ! preg_match( '/^#[0-9a-fA-F]{3,8}$/', $val ) ) {
+                    $val = '';
+                }
+            }
+            $clean['custom_styles'][ $field ] = $val;
+        }
+
         // Flush term caches on save.
         WPQA_Helpers::flush_all_transients();
 
@@ -190,10 +222,17 @@ class WPQA_Admin {
         <div class="wrap wpqa-admin-wrap">
             <h1><?php esc_html_e( 'WPQuickAttributes Settings', 'wpquickattributes' ); ?></h1>
 
+            <nav class="nav-tab-wrapper wpqa-nav-tabs">
+                <a href="#wpqa-tab-settings" class="nav-tab nav-tab-active"><?php esc_html_e( 'Settings', 'wpquickattributes' ); ?></a>
+                <a href="#wpqa-tab-style-editor" class="nav-tab"><?php esc_html_e( 'Style Editor', 'wpquickattributes' ); ?></a>
+            </nav>
+
             <form method="post" action="options.php">
                 <?php
                 settings_fields( 'wpqa_settings_group' );
                 ?>
+
+                <div id="wpqa-tab-settings" class="wpqa-tab-content wpqa-tab-active">
 
                 <!-- ── General ──────────────────────────────────────────── -->
                 <h2><?php esc_html_e( 'General', 'wpquickattributes' ); ?></h2>
@@ -397,6 +436,12 @@ class WPQA_Admin {
                 endif;
                 ?>
 
+                </div><!-- /#wpqa-tab-settings -->
+
+                <div id="wpqa-tab-style-editor" class="wpqa-tab-content" style="display:none;">
+                    <?php self::render_style_editor( $settings ); ?>
+                </div><!-- /#wpqa-tab-style-editor -->
+
                 <?php submit_button(); ?>
             </form>
 
@@ -412,6 +457,217 @@ class WPQA_Admin {
                 <?php esc_html_e( 'Search for "WPQuickAttributes" in the block inserter.', 'wpquickattributes' ); ?>
             </p>
         </div>
+        <?php
+    }
+
+    /* ── Style Editor tab ───────────────────────────────────────────── */
+
+    /**
+     * Render the Style Editor tab content.
+     *
+     * @param array $settings Current plugin settings.
+     */
+    public static function render_style_editor( $settings ) {
+        $s   = isset( $settings['custom_styles'] ) ? $settings['custom_styles'] : array();
+        $opt = WPQA_OPTION_KEY;
+
+        $field = function ( $key ) use ( $s ) {
+            return isset( $s[ $key ] ) ? $s[ $key ] : '';
+        };
+        ?>
+        <p class="description">
+            <?php esc_html_e( 'Customise the appearance of the frontend columns. Leave fields empty to use the default styles.', 'wpquickattributes' ); ?>
+        </p>
+
+        <!-- Container -->
+        <h2><?php esc_html_e( 'Container', 'wpquickattributes' ); ?></h2>
+        <table class="form-table">
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Max Width', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="small-text"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][container_max_width]"
+                           value="<?php echo esc_attr( $field( 'container_max_width' ) ); ?>"
+                           placeholder="1200px">
+                    <p class="description"><?php esc_html_e( 'e.g. 1200px, 80%, 60rem', 'wpquickattributes' ); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Background Color', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="wpqa-color-picker"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][container_bg]"
+                           value="<?php echo esc_attr( $field( 'container_bg' ) ); ?>"
+                           data-default-color="">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Padding', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="regular-text"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][container_padding]"
+                           value="<?php echo esc_attr( $field( 'container_padding' ) ); ?>"
+                           placeholder="0 1rem">
+                    <p class="description"><?php esc_html_e( 'CSS shorthand, e.g. 1rem 2rem', 'wpquickattributes' ); ?></p>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Title -->
+        <h2><?php esc_html_e( 'Container Title', 'wpquickattributes' ); ?></h2>
+        <table class="form-table">
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Color', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="wpqa-color-picker"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][title_color]"
+                           value="<?php echo esc_attr( $field( 'title_color' ) ); ?>"
+                           data-default-color="">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Font Size', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="small-text"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][title_font_size]"
+                           value="<?php echo esc_attr( $field( 'title_font_size' ) ); ?>"
+                           placeholder="1.6rem">
+                </td>
+            </tr>
+        </table>
+
+        <!-- Columns Grid -->
+        <h2><?php esc_html_e( 'Columns Grid', 'wpquickattributes' ); ?></h2>
+        <table class="form-table">
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Gap', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="small-text"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][grid_gap]"
+                           value="<?php echo esc_attr( $field( 'grid_gap' ) ); ?>"
+                           placeholder="1.5rem">
+                </td>
+            </tr>
+        </table>
+
+        <!-- Column Cards -->
+        <h2><?php esc_html_e( 'Column Cards', 'wpquickattributes' ); ?></h2>
+        <table class="form-table">
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Background Color', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="wpqa-color-picker"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][card_bg]"
+                           value="<?php echo esc_attr( $field( 'card_bg' ) ); ?>"
+                           data-default-color="">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Border Color', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="wpqa-color-picker"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][card_border_color]"
+                           value="<?php echo esc_attr( $field( 'card_border_color' ) ); ?>"
+                           data-default-color="">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Border Radius', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="small-text"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][card_border_radius]"
+                           value="<?php echo esc_attr( $field( 'card_border_radius' ) ); ?>"
+                           placeholder="6px">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Padding', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="regular-text"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][card_padding]"
+                           value="<?php echo esc_attr( $field( 'card_padding' ) ); ?>"
+                           placeholder="1.25rem 1.5rem">
+                </td>
+            </tr>
+        </table>
+
+        <!-- Column Headings -->
+        <h2><?php esc_html_e( 'Column Headings', 'wpquickattributes' ); ?></h2>
+        <table class="form-table">
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Color', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="wpqa-color-picker"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][heading_color]"
+                           value="<?php echo esc_attr( $field( 'heading_color' ) ); ?>"
+                           data-default-color="">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Font Size', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="small-text"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][heading_font_size]"
+                           value="<?php echo esc_attr( $field( 'heading_font_size' ) ); ?>"
+                           placeholder="1.1rem">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Border Bottom Color', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="wpqa-color-picker"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][heading_border_color]"
+                           value="<?php echo esc_attr( $field( 'heading_border_color' ) ); ?>"
+                           data-default-color="">
+                </td>
+            </tr>
+        </table>
+
+        <!-- Links -->
+        <h2><?php esc_html_e( 'Term Links', 'wpquickattributes' ); ?></h2>
+        <table class="form-table">
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Color', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="wpqa-color-picker"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][link_color]"
+                           value="<?php echo esc_attr( $field( 'link_color' ) ); ?>"
+                           data-default-color="">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Hover Color', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="wpqa-color-picker"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][link_hover_color]"
+                           value="<?php echo esc_attr( $field( 'link_hover_color' ) ); ?>"
+                           data-default-color="">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Font Size', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="small-text"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][link_font_size]"
+                           value="<?php echo esc_attr( $field( 'link_font_size' ) ); ?>"
+                           placeholder="0.95rem">
+                </td>
+            </tr>
+        </table>
+
+        <!-- Count Badge -->
+        <h2><?php esc_html_e( 'Term Count Badge', 'wpquickattributes' ); ?></h2>
+        <table class="form-table">
+            <tr>
+                <th scope="row"><label><?php esc_html_e( 'Color', 'wpquickattributes' ); ?></label></th>
+                <td>
+                    <input type="text" class="wpqa-color-picker"
+                           name="<?php echo esc_attr( $opt ); ?>[custom_styles][count_color]"
+                           value="<?php echo esc_attr( $field( 'count_color' ) ); ?>"
+                           data-default-color="">
+                </td>
+            </tr>
+        </table>
         <?php
     }
 }
