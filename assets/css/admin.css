@@ -1,0 +1,26 @@
+/**
+ * WPQuickAttributes — Admin styles
+ *
+ * Small tweaks for the settings page.
+ *
+ * @package WPQuickAttributes
+ */
+
+.wpqa-admin-wrap h2 {
+    margin-top: 2rem;
+}
+
+.wpqa-admin-wrap .form-table th {
+    width: 220px;
+}
+
+.wpqa-overrides-table th {
+    font-weight: 400;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.wpqa-overrides-table td input {
+    width: 100%;
+    max-width: 400px;
+}

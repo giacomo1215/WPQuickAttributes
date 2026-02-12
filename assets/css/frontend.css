@@ -1,0 +1,110 @@
+/**
+ * WPQuickAttributes — Front-end styles
+ *
+ * Minimal, framework-free layout.
+ * Uses CSS custom property --wpqa-cols (set inline) for column count.
+ *
+ * @package WPQuickAttributes
+ */
+
+/* ── Container ─────────────────────────────────────────────────────── */
+.wpqa-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    box-sizing: border-box;
+}
+
+.wpqa-container__title {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* ── Column grid ───────────────────────────────────────────────────── */
+.wpqa-columns {
+    display: grid;
+    grid-template-columns: repeat(var(--wpqa-cols, 3), 1fr);
+    gap: 1.5rem;
+}
+
+/* ── Single column / card ──────────────────────────────────────────── */
+.wpqa-column {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.wpqa-column__heading {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #0073aa;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* ── Term list ─────────────────────────────────────────────────────── */
+.wpqa-column__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.wpqa-column__item {
+    margin: 0;
+    padding: 0;
+}
+
+.wpqa-column__link {
+    display: block;
+    padding: 0.4rem 0;
+    color: #333;
+    text-decoration: none;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f0f0f0;
+    transition: color 0.15s ease, padding-left 0.15s ease;
+}
+
+.wpqa-column__link:hover,
+.wpqa-column__link:focus {
+    color: #0073aa;
+    padding-left: 0.3rem;
+    text-decoration: underline;
+}
+
+.wpqa-column__item:last-child .wpqa-column__link {
+    border-bottom: none;
+}
+
+.wpqa-column__count {
+    color: #888;
+    font-size: 0.85em;
+    margin-left: 0.25em;
+}
+
+.wpqa-column__empty {
+    color: #999;
+    font-style: italic;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* ── Responsive: stack on smaller screens ──────────────────────────── */
+@media (max-width: 768px) {
+    .wpqa-columns {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .wpqa-columns {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
