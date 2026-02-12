@@ -71,6 +71,14 @@ class WPQA_Admin {
             array(),
             WPQA_VERSION
         );
+
+        wp_enqueue_script(
+            'wpqa-admin',
+            WPQA_PLUGIN_URL . 'assets/js/admin.js',
+            array( 'jquery' ),
+            WPQA_VERSION,
+            true
+        );
     }
 
     /* ── Sanitization ───────────────────────────────────────────────── */
@@ -89,7 +97,12 @@ class WPQA_Admin {
         $columns         = isset( $input['columns'] ) ? (array) $input['columns'] : array();
         $clean['columns'] = array();
 
-        for ( $i = 1; $i <= 3; $i++ ) {
+        $num_cols = isset( $input['num_columns'] ) ? absint( $input['num_columns'] ) : 3;
+        if ( $num_cols < 1 || $num_cols > 6 ) {
+            $num_cols = 3;
+        }
+
+        for ( $i = 1; $i <= $num_cols; $i++ ) {
             $col = isset( $columns[ $i ] ) ? (array) $columns[ $i ] : array();
             $clean['columns'][ $i ] = array(
                 'taxonomy' => isset( $col['taxonomy'] ) && in_array( $col['taxonomy'], $attr_taxonomies, true )
@@ -215,11 +228,12 @@ class WPQA_Admin {
 
                 <!-- ── Columns ─────────────────────────────────────────── -->
                 <h2><?php esc_html_e( 'Attribute Columns', 'wpquickattributes' ); ?></h2>
-                <table class="form-table">
-                    <?php for ( $col = 1; $col <= 3; $col++ ) :
+                <table class="form-table" id="wpqa-columns-table">
+                    <?php for ( $col = 1; $col <= 6; $col++ ) :
                         $col_data = isset( $settings['columns'][ $col ] ) ? $settings['columns'][ $col ] : array( 'taxonomy' => '', 'heading' => '' );
+                        $hidden   = $col > $settings['num_columns'] ? ' style="display:none;"' : '';
                     ?>
-                    <tr>
+                    <tr class="wpqa-column-row" data-column="<?php echo esc_attr( $col ); ?>"<?php echo $hidden; ?>>
                         <th scope="row">
                             <?php
                             /* translators: %d: column number */
