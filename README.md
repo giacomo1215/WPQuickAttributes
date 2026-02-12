@@ -1,3 +1,14 @@
+![GitHub release](https://img.shields.io/github/v/release/giacomo1215/WPQuickAttributes)
+![GitHub downloads](https://img.shields.io/github/downloads/giacomo1215/WPQuickAttributes/total)
+![GitHub stars](https://img.shields.io/github/stars/giacomo1215/WPQuickAttributes)
+![GitHub issues](https://img.shields.io/github/issues/giacomo1215/WPQuickAttributes)
+![GitHub last commit](https://img.shields.io/github/last-commit/giacomo1215/WPQuickAttributes)
+![License](https://img.shields.io/github/license/giacomo1215/WPQuickAttributes)
+
+![WooCommerce](https://img.shields.io/badge/WooCommerce-Compatible-7f54b3?logo=woocommerce&logoColor=white)
+![Polylang](https://img.shields.io/badge/Polylang-Supported-2c9cff)
+![WordPress](https://img.shields.io/badge/WordPress-Plugin-21759b?logo=wordpress&logoColor=white)
+
 # WPQuickAttributes
 
 WooCommerce attribute quick-finder plugin — displays product attribute terms as filterable links in a responsive column/card layout.
